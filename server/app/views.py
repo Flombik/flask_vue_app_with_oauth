@@ -178,7 +178,7 @@ def edit_author(author_id):
 def delete_author(author_id):
     if request.method == 'DELETE':
         author = db.session.query(Author).filter(Author.id == author_id).one()
-        if Author.books is None:
+        if len(author.books) == 0:
             db.session.delete(author)
             db.session.commit()
             return {'status': 'success', 'message': 'Author removed!'}

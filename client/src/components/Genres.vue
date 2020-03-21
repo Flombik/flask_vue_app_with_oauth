@@ -59,21 +59,21 @@
 </template>
 
 <script>
-import axios from 'axios';
-import Alert from './Alert.vue';
-import First from './First.vue';
+  import axios from 'axios';
+  import Alert from './Alert.vue';
+  import First from './Navigation.vue';
 
-export default {
-  data() {
-    return {
-      genres: [],
-      addGenreForm: {
-        genre: '',
-      },
-      message: '',
-      showMessage: false,
-    };
-  },
+  export default {
+    data() {
+      return {
+        genres: [],
+        addGenreForm: {
+          genre: '',
+        },
+        message: '',
+        showMessage: false,
+      };
+    },
   components: {
     alert: Alert,
     first: First,

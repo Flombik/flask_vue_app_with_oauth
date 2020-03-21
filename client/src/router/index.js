@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import First from '../components/First.vue';
 import Books from '../components/Books.vue';
 import Authors from '../components/Authors.vue';
 import Publishers from '../components/Publishers.vue';
@@ -12,7 +11,7 @@ const routes = [
   {
     path: '/',
     name: 'First',
-    component: First,
+    component: Books,
   },
   {
     path: '/books',

@@ -155,21 +155,21 @@
 </template>
 
 <script>
-import axios from 'axios';
-import Alert from './Alert.vue';
-import First from './First.vue';
+  import axios from 'axios';
+  import Alert from './Alert.vue';
+  import First from './Navigation.vue';
 
-export default {
-  data() {
-    return {
-      publishers: [],
-      addPublisherForm: {
-        name: '',
-        address: '',
-        phone_num: '',
-        website: '',
-      },
-      editPublisherForm: {
+  export default {
+    data() {
+      return {
+        publishers: [],
+        addPublisherForm: {
+          name: '',
+          address: '',
+          phone_num: '',
+          website: '',
+        },
+        editPublisherForm: {
         id: '',
         name: '',
         address: '',
