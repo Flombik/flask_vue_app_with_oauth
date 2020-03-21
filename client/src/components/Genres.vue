@@ -1,6 +1,8 @@
 <template>
   <b-container>
-    <b-row><first></first></b-row>
+    <b-row>
+      <first></first>
+    </b-row>
     <b-row>
       <b-col col sm="7">
         <h1>Genres</h1>
@@ -22,12 +24,12 @@
           <tr>
             <td>{{ genre.genre }}</td>
             <td>
-                <button
-                  type="button"
-                  class="btn btn-danger btn-sm"
-                  @click="onDeleteGenre(genre)">
-                  Delete
-                </button>
+              <button
+                type="button"
+                class="btn btn-danger btn-sm"
+                @click="onDeleteGenre(genre)">
+                Delete
+              </button>
             </td>
           </tr>
           </tbody>
@@ -59,21 +61,21 @@
 </template>
 
 <script>
-  import axios from 'axios';
-  import Alert from './Alert.vue';
-  import First from './Navigation.vue';
+import axios from 'axios';
+import Alert from './Alert.vue';
+import First from './Navigation.vue';
 
-  export default {
-    data() {
-      return {
-        genres: [],
-        addGenreForm: {
-          genre: '',
-        },
-        message: '',
-        showMessage: false,
-      };
-    },
+export default {
+  data() {
+    return {
+      genres: [],
+      addGenreForm: {
+        genre: '',
+      },
+      message: '',
+      showMessage: false,
+    };
+  },
   components: {
     alert: Alert,
     first: First,

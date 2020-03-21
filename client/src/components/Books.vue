@@ -1,6 +1,8 @@
 <template>
   <b-container>
-    <b-row><first></first></b-row>
+    <b-row>
+      <first></first>
+    </b-row>
     <b-row>
       <b-col col sm="15">
         <h1>Books</h1>
@@ -197,21 +199,21 @@
 </template>
 
 <script>
-  import axios from 'axios';
-  import Alert from './Alert.vue';
-  import First from './Navigation.vue';
+import axios from 'axios';
+import Alert from './Alert.vue';
+import First from './Navigation.vue';
 
-  export default {
-    data() {
-      return {
-        books: [],
-        addBookForm: {
-          title: '',
-          author: '',
-          genre: '',
-          year: '',
-          pages: '',
-          publisher: '',
+export default {
+  data() {
+    return {
+      books: [],
+      addBookForm: {
+        title: '',
+        author: '',
+        genre: '',
+        year: '',
+        pages: '',
+        publisher: '',
       },
       editBookForm: {
         id: '',

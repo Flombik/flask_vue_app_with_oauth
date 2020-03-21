@@ -1,13 +1,15 @@
 <template>
   <b-container>
-    <b-row><first></first></b-row>
+    <b-row>
+      <first></first>
+    </b-row>
     <b-row>
       <b-col col sm="10">
         <h1>Publishers</h1>
         <hr>
         <br><br>
         <alert :message=message v-if="showMessage"></alert>
-        <button type="button" class="btn btn-success btn-sm" v-b-modal.publisher-modal>
+        <button class="btn btn-success btn-sm" type="button" v-b-modal.publisher-modal>
           Add Publisher
         </button>
         <br><br>
@@ -21,7 +23,7 @@
             <th></th>
           </tr>
           </thead>
-          <tbody v-for="(publisher, index) in publishers" :key="index">
+          <tbody :key="index" v-for="(publisher, index) in publishers">
           <tr>
             <td>{{ publisher.name }}</td>
             <td>{{ publisher.address }}</td>
@@ -30,16 +32,16 @@
             <td>
               <div class="btn-group" role="group">
                 <button
-                  type="button"
+                  @click="editPublisher(publisher)"
                   class="btn btn-warning btn-sm"
-                  v-b-modal.publisher-update-modal
-                  @click="editPublisher(publisher)">
+                  type="button"
+                  v-b-modal.publisher-update-modal>
                   Update
                 </button>
                 <button
-                  type="button"
+                  @click="onDeletePublisher(publisher)"
                   class="btn btn-danger btn-sm"
-                  @click="onDeletePublisher(publisher)">
+                  type="button">
                   Delete
                 </button>
               </div>
@@ -49,49 +51,49 @@
         </table>
       </b-col>
     </b-row>
-    <b-modal ref="addPublisherModal"
+    <b-modal hide-footer
              id="publisher-modal"
-             title="Add a new publisher"
-             hide-footer>
-      <b-form @submit="onSubmit" @reset="onReset" class="w-100">
+             ref="addPublisherModal"
+             title="Add a new publisher">
+      <b-form @reset="onReset" @submit="onSubmit" class="w-100">
         <b-form-group id="form-name-group"
                       label="Name:"
                       label-for="form-name-input">
           <b-form-input id="form-name-input"
-                        type="text"
-                        v-model="addPublisherForm.name"
+                        placeholder="Enter name"
                         required
-                        placeholder="Enter name">
+                        type="text"
+                        v-model="addPublisherForm.name">
           </b-form-input>
         </b-form-group>
         <b-form-group id="form-address-group"
                       label="Address:"
                       label-for="form-address-input">
           <b-form-input id="form-address-input"
-                        type="text"
-                        v-model="addPublisherForm.address"
+                        placeholder="Enter address"
                         required
-                        placeholder="Enter address">
+                        type="text"
+                        v-model="addPublisherForm.address">
           </b-form-input>
         </b-form-group>
         <b-form-group id="form-phone-num-group"
                       label="Phone number:"
                       label-for="form-phone-num-input">
           <b-form-input id="form-phone-num-input"
-                        type="text"
-                        v-model="addPublisherForm.phone_num"
+                        placeholder="Enter phone number"
                         required
-                        placeholder="Enter phone number">
+                        type="text"
+                        v-model="addPublisherForm.phone_num">
           </b-form-input>
         </b-form-group>
         <b-form-group id="form-website-group"
                       label="Website:"
                       label-for="form-website-input">
           <b-form-input id="form-website-input"
-                        type="text"
-                        v-model="addPublisherForm.website"
+                        placeholder="Enter website"
                         required
-                        placeholder="Enter website">
+                        type="text"
+                        v-model="addPublisherForm.website">
           </b-form-input>
         </b-form-group>
         <b-button-group>
@@ -100,49 +102,49 @@
         </b-button-group>
       </b-form>
     </b-modal>
-    <b-modal ref="editPublisherModal"
+    <b-modal hide-footer
              id="publisher-update-modal"
-             title="Update"
-             hide-footer>
-      <b-form @submit="onSubmitUpdate" @reset="onResetUpdate" class="w-100">
+             ref="editPublisherModal"
+             title="Update">
+      <b-form @reset="onResetUpdate" @submit="onSubmitUpdate" class="w-100">
         <b-form-group id="form-name-edit-group"
                       label="Name:"
                       label-for="form-name-edit-input">
           <b-form-input id="form-name-edit-input"
-                        type="text"
-                        v-model="editPublisherForm.name"
+                        placeholder="Enter name"
                         required
-                        placeholder="Enter name">
+                        type="text"
+                        v-model="editPublisherForm.name">
           </b-form-input>
         </b-form-group>
         <b-form-group id="form-address-edit-group"
                       label="Address:"
                       label-for="form-address-edit-input">
           <b-form-input id="form-address-edit-input"
-                        type="text"
-                        v-model="editPublisherForm.address"
+                        placeholder="Enter address"
                         required
-                        placeholder="Enter address">
+                        type="text"
+                        v-model="editPublisherForm.address">
           </b-form-input>
         </b-form-group>
         <b-form-group id="form-phone-num-edit-group"
                       label="Phone number:"
                       label-for="form-phone-num-edit-input">
           <b-form-input id="form-phone-num-edit-input"
-                        type="text"
-                        v-model="editPublisherForm.phone_num"
+                        placeholder="Enter phone number"
                         required
-                        placeholder="Enter phone number">
+                        type="text"
+                        v-model="editPublisherForm.phone_num">
           </b-form-input>
         </b-form-group>
         <b-form-group id="form-website-edit-group"
                       label="Website:"
                       label-for="form-website-edit-input">
           <b-form-input id="form-website-edit-input"
-                        type="text"
-                        v-model="editPublisherForm.website"
+                        placeholder="Enter website"
                         required
-                        placeholder="Enter website">
+                        type="text"
+                        v-model="editPublisherForm.website">
           </b-form-input>
         </b-form-group>
         <b-button-group>
@@ -155,21 +157,21 @@
 </template>
 
 <script>
-  import axios from 'axios';
-  import Alert from './Alert.vue';
-  import First from './Navigation.vue';
+import axios from 'axios';
+import Alert from './Alert.vue';
+import First from './Navigation.vue';
 
-  export default {
-    data() {
-      return {
-        publishers: [],
-        addPublisherForm: {
-          name: '',
-          address: '',
-          phone_num: '',
-          website: '',
-        },
-        editPublisherForm: {
+export default {
+  data() {
+    return {
+      publishers: [],
+      addPublisherForm: {
+        name: '',
+        address: '',
+        phone_num: '',
+        website: '',
+      },
+      editPublisherForm: {
         id: '',
         name: '',
         address: '',

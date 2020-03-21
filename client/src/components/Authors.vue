@@ -1,6 +1,8 @@
 <template>
   <b-container>
-    <b-row><first></first></b-row>
+    <b-row>
+      <first></first>
+    </b-row>
     <b-row>
       <b-col col sm="10">
         <h1>Authors</h1>
@@ -133,21 +135,21 @@
 </template>
 
 <script>
-  import axios from 'axios';
-  import Alert from './Alert.vue';
-  import First from './Navigation.vue';
+import axios from 'axios';
+import Alert from './Alert.vue';
+import First from './Navigation.vue';
 
-  export default {
-    data() {
-      return {
-        authors: [],
-        addAuthorForm: {
-          name: '',
-          direction: '',
-          date_of_birth: '',
-        },
-        editAuthorForm: {
-          id: '',
+export default {
+  data() {
+    return {
+      authors: [],
+      addAuthorForm: {
+        name: '',
+        direction: '',
+        date_of_birth: '',
+      },
+      editAuthorForm: {
+        id: '',
         name: '',
         direction: '',
         date_of_birth: '',
