@@ -1,10 +1,10 @@
 <template>
-<div>
-  <b-alert
-    variant="success" show> {{ message }}
-  </b-alert>
-  <br>
-</div>
+  <div>
+    <b-alert
+      variant="success" show> {{ message }}
+    </b-alert>
+    <br>
+  </div>
 </template>
 
 <script>
