@@ -1,19 +1,17 @@
 <template>
   <div>
-    <b-alert
-      variant="success" show> {{ message }}
-    </b-alert>
-    <br>
+    <b-alert variant="success" show> {{ message }} </b-alert>
+    <br />
   </div>
 </template>
 
 <script>
 export default {
-  props: ['message'],
+  props: ["message"],
   data() {
     return {
       dismissSecs: 5,
-      dismissCountDown: 0,
+      dismissCountDown: 0
     };
   },
   methods: {
@@ -22,7 +20,7 @@ export default {
     },
     showAlert() {
       this.dismissCountDown = this.dismissSecs;
-    },
-  },
+    }
+  }
 };
 </script>
