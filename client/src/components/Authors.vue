@@ -1,20 +1,17 @@
 <template>
   <b-container>
-    <b-row>
-      <first></first>
-    </b-row>
-    <b-row>
-      <b-col col sm="10">
+    <navigation/>
+    <div class="comp-style">
+      <div class="table-width">
         <h1>Authors</h1>
-        <hr>
         <br><br>
         <alert :dismiss=dismiss :message=message v-if="showMessage"></alert>
-        <button type="button" class="btn btn-success btn-sm" v-b-modal.author-modal>
+        <button type="button" class="btn btn-success" v-b-modal.author-modal>
           Add Author
         </button>
         <br><br>
         <table class="table table-hover">
-          <thead>
+          <thead class="thead-light">
           <tr>
             <th scope="col">Name</th>
             <th scope="col">Direction</th>
@@ -27,7 +24,7 @@
             <td>{{ author.name }}</td>
             <td>{{ author.direction }}</td>
             <td>{{ author.date_of_birth }}</td>
-            <td>
+            <td class="btn-gr-ud">
               <div class="btn-group" role="group">
                 <button
                   type="button"
@@ -47,8 +44,8 @@
           </tr>
           </tbody>
         </table>
-      </b-col>
-    </b-row>
+      </div>
+    </div>
     <b-modal ref="addAuthorModal"
              id="author-modal"
              title="Add a new author"
@@ -137,7 +134,7 @@
 <script>
 import axios from 'axios';
 import Alert from './Alert.vue';
-import First from './Navigation.vue';
+import Navigation from './Navigation.vue';
 
 export default {
   data() {
@@ -161,7 +158,7 @@ export default {
   },
   components: {
     alert: Alert,
-    first: First,
+    navigation: Navigation,
   },
   methods: {
     getAuthors() {
@@ -270,3 +267,20 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+  .comp-style {
+    padding: 15px;
+    margin: 0 auto;
+  }
+
+  .table-width {
+    max-width: 25cm;
+    margin: 0 auto;
+  }
+
+  .btn-gr-ud {
+    text-align: right;
+    width: 105px;
+  }
+</style>

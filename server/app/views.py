@@ -1,7 +1,101 @@
-from flask import request
+from flask import request, redirect, url_for
+import urllib.parse as parser
+import requests
 
 from server.app import app
 from .models import Book, Author, Genre, PublishHouse, db
+
+
+@app.route('/login/github/')
+def login_via_github():
+    authorization_code_req = {'client_id': '4e0a85b77b11c9e13162'}
+    return redirect('https://github.com/login/oauth/authorize?{}'.format(parser.urlencode(authorization_code_req)))
+
+
+@app.route('/login/github/callback/')
+def github_callback():
+    query = request.query_string
+    if query != b'':
+        query_data = parser.parse_qs(query)
+        code = query_data[b'code'][0].decode('utf-8')
+        token_req = {
+            'client_id': '4e0a85b77b11c9e13162',
+            'client_secret': 'c9b5069fc71c51be2657c8960dadea17106b3774',
+            'code': code
+        }
+        token_resp = requests.post('https://github.com/login/oauth/access_token?%s' % parser.urlencode(token_req),
+                                   headers={'Accept': 'application/json'})
+        token = token_resp.json().get('access_token')
+
+        user_info_resp = requests.get('https://api.github.com/user',
+                                      headers={'Authorization': 'token {}'.format(token)})
+        user_info_resp.json().get('email')
+        return redirect(url_for('books'))
+
+
+@app.route('/login/vk/')
+def login_via_vk():
+    authorization_code_req = {'client_id': '7371489',
+                              'redirect_uri': 'http://localhost:5000/login/vk/callback',
+                              'response_type': 'code',
+                              'scope': 'email'}
+    return redirect('https://oauth.vk.com/authorize?{}'.format(parser.urlencode(authorization_code_req)))
+
+
+@app.route('/login/vk/callback/')
+def vk_callback():
+    query = request.query_string
+    print(query)
+    if query != b'':
+        query_data = parser.parse_qs(query)
+        code = query_data[b'code'][0].decode('utf-8')
+        token_req = {
+            'client_id': '7371489',
+            'client_secret': 'JyM13YVJ0VIrKvjaARiR',
+            'redirect_uri': 'http://localhost:5000/login/vk/callback',
+            'code': code
+        }
+        print(code)
+        response = requests.post('https://oauth.vk.com/access_token?%s' % parser.urlencode(token_req),
+                                 headers={'Accept': 'application/json'})
+        token = response.json().get('access_token')
+        email = response.json().get('email')
+
+        # user_info_resp = requests.get('https://api.github.com/user',
+        #                               headers={'Authorization': 'token {}'.format(token)})
+        # user_info_resp.json().get('email')
+        return redirect(url_for('books'))
+
+
+@app.route('/login/yandex/')
+def login_via_yandex():
+    authorization_code_req = {'response_type': 'code', 'client_id': '2786de9efc2c4f819c464b3056b946d5',
+                              'force_confirm': 'true'}
+    return redirect('https://oauth.yandex.ru/authorize?{}'.format(parser.urlencode(authorization_code_req)))
+
+
+@app.route('/login/yandex/callback/')
+def yandex_callback():
+    query = request.query_string
+    print(query)
+    if query != b'':
+        query_data = parser.parse_qs(query)
+        code = query_data[b'code'][0].decode('utf-8')
+        client_id = '2786de9efc2c4f819c464b3056b946d5'
+        client_secret = 'a7f7ef10b108464fa35bd11a2c069937'
+        data = 'grant_type=authorization_code'
+        data += '&code=' + code
+        data += '&client_id=' + client_id
+        data += '&client_secret=' + client_secret
+        token_resp = requests.post(
+            'https://oauth.yandex.ru/token', data=data)
+        token = token_resp.json().get('access_token')
+
+        user_info_resp = requests.get('https://login.yandex.ru/info?format=json',
+                                      headers={'Authorization': 'OAuth {}'.format(token)})
+
+        email = user_info_resp.json().get('default_email')
+        return email
 
 
 @app.route('/books/')

@@ -1,18 +1,15 @@
 <template>
   <b-container>
-    <b-row>
-      <first></first>
-    </b-row>
-    <b-row>
-      <b-col col sm="15">
+    <navigation/>
+    <div class="comp-style">
+      <div class="table-width">
         <h1>Books</h1>
-        <hr>
         <br><br>
         <alert :message=message v-if="showMessage"></alert>
-        <button type="button" class="btn btn-success btn-sm" v-b-modal.book-modal>Add Book</button>
+        <button type="button" class="btn btn-success" v-b-modal.book-modal>Add Book</button>
         <br><br>
         <table class="table table-hover">
-          <thead>
+          <thead class="thead-light">
           <tr>
             <th scope="col">Title</th>
             <th scope="col">Author</th>
@@ -20,7 +17,7 @@
             <th scope="col">Year of writing</th>
             <th scope="col">Pages</th>
             <th scope="col">Publish house</th>
-            <th></th>
+            <th/>
           </tr>
           </thead>
           <tbody v-for="(book, index) in books" :key="index">
@@ -31,7 +28,7 @@
             <td>{{ book.year }}</td>
             <td>{{ book.pages }}</td>
             <td>{{ book.publisher }}</td>
-            <td>
+            <td class="btn-gr-ud">
               <div class="btn-group" role="group">
                 <button
                   type="button"
@@ -51,8 +48,8 @@
           </tr>
           </tbody>
         </table>
-      </b-col>
-    </b-row>
+      </div>
+    </div>
     <b-modal ref="addBookModal"
              id="book-modal"
              title="Add a new book"
@@ -201,7 +198,7 @@
 <script>
 import axios from 'axios';
 import Alert from './Alert.vue';
-import First from './Navigation.vue';
+import Navigation from './Navigation.vue';
 
 export default {
   data() {
@@ -230,7 +227,7 @@ export default {
   },
   components: {
     alert: Alert,
-    first: First,
+    navigation: Navigation,
   },
   methods: {
     getBooks() {
@@ -350,3 +347,20 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+  .comp-style {
+    padding: 15px;
+    margin: 0 auto;
+  }
+
+  .table-width {
+    max-width: 25cm;
+    margin: 0 auto;
+  }
+
+  .btn-gr-ud {
+    text-align: right;
+    width: 105px;
+  }
+</style>

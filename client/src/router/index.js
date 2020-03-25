@@ -4,6 +4,7 @@ import Books from '../components/Books.vue';
 import Authors from '../components/Authors.vue';
 import Publishers from '../components/Publishers.vue';
 import Genres from '../components/Genres.vue';
+import Login from '../components/Login.vue';
 
 Vue.use(VueRouter);
 
@@ -32,6 +33,11 @@ const routes = [
     path: '/genres',
     name: 'Genres',
     component: Genres,
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login,
   },
 ];
 

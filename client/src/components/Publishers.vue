@@ -1,20 +1,17 @@
 <template>
   <b-container>
-    <b-row>
-      <first></first>
-    </b-row>
-    <b-row>
-      <b-col col sm="10">
+    <navigation/>
+    <div class="comp-style">
+      <div class="table-width">
         <h1>Publishers</h1>
-        <hr>
         <br><br>
         <alert :message=message v-if="showMessage"></alert>
-        <button class="btn btn-success btn-sm" type="button" v-b-modal.publisher-modal>
+        <button class="btn btn-success" type="button" v-b-modal.publisher-modal>
           Add Publisher
         </button>
         <br><br>
         <table class="table table-hover">
-          <thead>
+          <thead class="thead-light">
           <tr>
             <th scope="col">Name</th>
             <th scope="col">Address</th>
@@ -29,7 +26,7 @@
             <td>{{ publisher.address }}</td>
             <td>{{ publisher.phone_num }}</td>
             <td>{{ publisher.website }}</td>
-            <td>
+            <td class="btn-gr-ud">
               <div class="btn-group" role="group">
                 <button
                   @click="editPublisher(publisher)"
@@ -49,8 +46,8 @@
           </tr>
           </tbody>
         </table>
-      </b-col>
-    </b-row>
+      </div>
+    </div>
     <b-modal hide-footer
              id="publisher-modal"
              ref="addPublisherModal"
@@ -159,7 +156,7 @@
 <script>
 import axios from 'axios';
 import Alert from './Alert.vue';
-import First from './Navigation.vue';
+import Navigation from './Navigation.vue';
 
 export default {
   data() {
@@ -184,7 +181,7 @@ export default {
   },
   components: {
     alert: Alert,
-    first: First,
+    navigation: Navigation,
   },
   methods: {
     getPublishers() {
@@ -296,3 +293,20 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+  .comp-style {
+    padding: 15px;
+    margin: 0 auto;
+  }
+
+  .table-width {
+    max-width: 25cm;
+    margin: 0 auto;
+  }
+
+  .btn-gr-ud {
+    text-align: right;
+    width: 105px;
+  }
+</style>

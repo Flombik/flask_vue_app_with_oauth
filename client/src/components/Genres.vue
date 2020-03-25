@@ -1,20 +1,17 @@
 <template>
   <b-container>
-    <b-row>
-      <first></first>
-    </b-row>
-    <b-row>
-      <b-col col sm="7">
+    <navigation/>
+    <div class="comp-style">
+      <div class="table-width">
         <h1>Genres</h1>
-        <hr>
         <br><br>
         <alert :message=message v-if="showMessage"></alert>
-        <button type="button" class="btn btn-success btn-sm" v-b-modal.genre-modal>
+        <button type="button" class="btn btn-success" v-b-modal.genre-modal>
           Add Genre
         </button>
         <br><br>
         <table class="table table-hover">
-          <thead>
+          <thead class="thead-light">
           <tr>
             <th scope="col">Genre</th>
             <th></th>
@@ -23,7 +20,7 @@
           <tbody v-for="(genre, index) in genres" :key="index">
           <tr>
             <td>{{ genre.genre }}</td>
-            <td>
+            <td class="btn-gr-ud">
               <button
                 type="button"
                 class="btn btn-danger btn-sm"
@@ -34,8 +31,8 @@
           </tr>
           </tbody>
         </table>
-      </b-col>
-    </b-row>
+      </div>
+    </div>
     <b-modal ref="addGenreModal"
              id="genre-modal"
              title="Add a new genre"
@@ -63,7 +60,7 @@
 <script>
 import axios from 'axios';
 import Alert from './Alert.vue';
-import First from './Navigation.vue';
+import Navigation from './Navigation.vue';
 
 export default {
   data() {
@@ -78,7 +75,7 @@ export default {
   },
   components: {
     alert: Alert,
-    first: First,
+    navigation: Navigation,
   },
   methods: {
     getGenres() {
@@ -146,3 +143,20 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+  .comp-style {
+    padding: 15px;
+    margin: 0 auto;
+  }
+
+  .table-width {
+    max-width: 10cm;
+    margin: 0 auto;
+  }
+
+  .btn-gr-ud {
+    text-align: right;
+    width: 55px;
+  }
+</style>
