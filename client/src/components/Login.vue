@@ -1,19 +1,13 @@
 <template>
   <b-container>
-    <navigation/>
-    <form class="form-signin">
+    <form class="form-signin" @submit.prevent="login">
       <h1 class="form-signin-heading">Please sign in</h1>
       <label for="inputEmail" class="sr-only">Email address</label>
-      <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required
-             autofocus>
+      <input type="email" id="inputEmail" v-model="email" class="form-control"
+             placeholder="Email address" required autofocus>
       <label for="inputPassword" class="sr-only">Password</label>
-      <input type="password" id="inputPassword" class="form-control" placeholder="Password"
-             required>
-      <div class="checkbox">
-        <label>
-          <input type="checkbox" value="remember-me"> Remember me
-        </label>
-      </div>
+      <input type="password" id="inputPassword" v-model="password" class="form-control"
+             placeholder="Password" required>
       <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
     </form>
 
@@ -29,27 +23,40 @@
       </button>
     </div>
 
+    <b-alert class="form-signin-alert" v-if="showMessage" variant="warning" show>{{message}}</b-alert>
+
   </b-container>
 </template>
 
 <script>
-import Navigation from './Navigation.vue';
 
-export default {
-  name: 'Login',
-  data() {
-    return {
-      input: {
-        username: '',
+  export default {
+    name: 'Login',
+    data() {
+      return {
+        email: '',
         password: '',
+        message: '',
+        showMessage: false,
+      };
+    },
+    methods: {
+      login: function () {
+        let email = this.email;
+        let password = this.password;
+        this.$store.dispatch('login', {email, password})
+          .then((res) => {
+              this.$router.push('/');
+              location.reload();
+            },
+            error => {
+              this.message = 'Invalid credentials';
+              this.showMessage = true;
+            })
+          .catch(err => console.log(err));
       },
-    };
-  },
-  components: {
-    navigation: Navigation,
-  },
-  methods: {},
-};
+    },
+  };
 </script>
 
 <style scoped>
@@ -59,12 +66,18 @@ export default {
     margin: 0 auto;
   }
 
+  .form-signin-alert {
+    max-width: 300px;
+    padding: 15px;
+    margin: 30px auto 0;
+  }
+
   .form-signin .form-signin-heading,
-  .form-signin .checkbox {
+  .form-signin {
     margin-bottom: 10px;
   }
 
-  .form-signin .checkbox {
+  .form-signin {
     font-weight: 400;
   }
 

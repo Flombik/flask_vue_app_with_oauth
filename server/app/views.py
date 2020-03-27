@@ -1,9 +1,72 @@
-from flask import request, redirect, url_for
+from flask import request, redirect, url_for, jsonify
 import urllib.parse as parser
 import requests
+import jwt
+from functools import wraps
+from datetime import datetime, timedelta
 
 from server.app import app
-from .models import Book, Author, Genre, PublishHouse, db
+from .models import Book, Author, Genre, PublishHouse, User, db
+
+
+def token_required(f):
+    @wraps(f)
+    def _verify(*args, **kwargs):
+        auth_headers = request.headers.get('Authorization', '').split()
+
+        invalid_msg = {
+            'message': 'Invalid token. Registeration and / or authentication required',
+            'authenticated': False
+        }
+        expired_msg = {
+            'message': 'Expired token. Reauthentication required.',
+            'authenticated': False
+        }
+
+        if len(auth_headers) != 1:
+            return jsonify(invalid_msg), 401
+
+        try:
+            token = auth_headers[0]
+            data = jwt.decode(token, app.config['SECRET_KEY'])
+            user = db.session.query(User).filter(User.email == data['sub']).first()
+            if not user:
+                raise RuntimeError('User not found')
+            return f(user, *args, **kwargs)
+        except jwt.ExpiredSignatureError:
+            return jsonify(expired_msg), 401
+        except (jwt.InvalidTokenError, Exception) as e:
+            print(e)
+            return jsonify(invalid_msg), 401
+
+    return _verify
+
+
+@app.route('/login/', methods=['post'])
+def login():
+    data = request.get_json()
+    user = User.authenticate(**data)
+
+    if not user:
+        return jsonify({'message': 'Invalid credentials', 'authenticated': False}), 401
+
+    username = user.email.split('@')[0]
+
+    token = jwt.encode({
+        'sub': user.email,
+        'iat': datetime.utcnow(),
+        'exp': datetime.utcnow() + timedelta(minutes=30)},
+        app.config['SECRET_KEY'])
+    return jsonify({'token': token.decode('UTF-8'), 'username': username})
+
+
+@app.route('/register/', methods=['post'])
+def register():
+    data = request.get_json()
+    user = User(**data)
+    db.session.add(user)
+    db.session.commit()
+    return {'status': 'success', 'message': 'Registered successfully!'}
 
 
 @app.route('/login/github/')
@@ -114,7 +177,8 @@ def books():
 
 
 @app.route('/books/add/', methods=['post'])
-def add_book():
+@token_required
+def add_book(current_user):
     if request.method == 'POST':
         data = request.get_json()
         title = data.get('title')
@@ -132,7 +196,7 @@ def add_book():
 
         query_res = db.session.query(Author).filter(Author.name == author_name).first()
         if query_res is None:
-            author = Author(name=author_name)
+            author = Author(name=author_name, creator=current_user)
         else:
             author = query_res
         book.author = author
@@ -140,7 +204,8 @@ def add_book():
         if genre_name is not None:
             query_res = db.session.query(Genre).filter(Genre.genre == genre_name).first()
             if query_res is None:
-                genre = Genre(genre=genre_name)
+                genre = Genre(genre=genre_name, creator=current_user)
+                genre.creator = current_user
             else:
                 genre = query_res
             book.genre = genre
@@ -148,11 +213,13 @@ def add_book():
         if publish_house_name is not None:
             query_res = db.session.query(PublishHouse).filter(PublishHouse.name == publish_house_name).first()
             if query_res is None:
-                publish_house = PublishHouse(name=publish_house_name)
+                publish_house = PublishHouse(name=publish_house_name, creator=current_user)
+                publish_house.creator = current_user
             else:
                 publish_house = query_res
             book.publish_house = publish_house
 
+        book.creator = current_user
         db.session.add(book)
         db.session.commit()
 
@@ -160,8 +227,13 @@ def add_book():
 
 
 @app.route("/books/<int:book_id>/edit/", methods=['put'])
-def edit_book(book_id):
+@token_required
+def edit_book(current_user, book_id):
     if request.method == 'PUT':
+        book = db.session.query(Book).filter(Book.id == book_id).one()
+        if book.creator_id is not current_user.id:
+            return {'status': 'fail', 'message': 'You can\'t edit this, because you are not a creator'}
+
         data = request.get_json()
         title = data.get('title')
         author_name = data.get('author')
@@ -169,8 +241,6 @@ def edit_book(book_id):
         year = data.get('year')
         pages = data.get('pages')
         publish_house_name = data.get('publisher')
-
-        book = db.session.query(Book).filter(Book.id == book_id).one()
 
         book.title = title
         book.year_of_writing = year
@@ -206,9 +276,12 @@ def edit_book(book_id):
 
 
 @app.route('/books/<int:book_id>/delete/', methods=['delete'])
-def delete_book(book_id):
+@token_required
+def delete_book(current_user, book_id):
     if request.method == 'DELETE':
         book = db.session.query(Book).filter(Book.id == book_id).one()
+        if book.creator_id is not current_user.id:
+            return {'status': 'fail', 'message': 'You can\'t delete this, because you are not a creator'}
         db.session.delete(book)
         db.session.commit()
         return {'status': 'success', 'message': 'Book removed!'}
@@ -229,7 +302,8 @@ def show_authors():
 
 
 @app.route('/authors/add/', methods=['post'])
-def add_author():
+@token_required
+def add_author(current_user):
     if request.method == 'POST':
         data = request.get_json()
         name = data.get('name')
@@ -241,6 +315,7 @@ def add_author():
         author.name = name
         author.date_of_birth = dom
         author.direction = direction
+        author.creator = current_user
 
         db.session.add(author)
         db.session.commit()
@@ -249,14 +324,17 @@ def add_author():
 
 
 @app.route('/authors/<int:author_id>/edit/', methods=['put'])
-def edit_author(author_id):
+@token_required
+def edit_author(current_user, author_id):
     if request.method == 'PUT':
+        author = db.session.query(Author).filter(Author.id == author_id).one()
+        if author.creator_id is not current_user.id:
+            return {'status': 'fail', 'message': 'You can\'t edit this, because you are not a creator'}
+
         data = request.get_json()
         name = data.get('name')
         direction = data.get('direction')
         dom = data.get('date_of_birth')
-
-        author = db.session.query(Author).filter(Author.id == author_id).one()
 
         author.name = name
         author.date_of_birth = dom
@@ -269,9 +347,12 @@ def edit_author(author_id):
 
 
 @app.route('/authors/<int:author_id>/delete/', methods=['delete'])
-def delete_author(author_id):
+@token_required
+def delete_author(current_user, author_id):
     if request.method == 'DELETE':
         author = db.session.query(Author).filter(Author.id == author_id).one()
+        if author.creator_id is not current_user.id:
+            return {'status': 'fail', 'message': 'You can\'t delete this, because you are not a creator'}
         if len(author.books) == 0:
             db.session.delete(author)
             db.session.commit()
@@ -294,7 +375,8 @@ def show_publishers():
 
 
 @app.route('/publishers/add/', methods=['post'])
-def add_publisher():
+@token_required
+def add_publisher(current_user):
     if request.method == 'POST':
         data = request.get_json()
         name = data.get('name')
@@ -308,6 +390,8 @@ def add_publisher():
         publisher.address = address
         publisher.phone_num = phone_num
         publisher.website = website
+        publisher.creator = current_user
+
         db.session.add(publisher)
         db.session.commit()
 
@@ -315,15 +399,18 @@ def add_publisher():
 
 
 @app.route('/publishers/<int:publisher_id>/edit/', methods=['put'])
-def edit_publisher(publisher_id):
+@token_required
+def edit_publisher(current_user, publisher_id):
     if request.method == 'PUT':
+        publisher = db.session.query(PublishHouse).filter(PublishHouse.id == publisher_id).one()
+        if publisher.creator_id is not current_user.id:
+            return {'status': 'fail', 'message': 'You can\'t edit this, because you are not a creator'}
+
         data = request.get_json()
         name = data.get('name')
         address = data.get('address')
         phone_num = data.get('phone_num')
         website = data.get('website')
-
-        publisher = db.session.query(PublishHouse).filter(PublishHouse.id == publisher_id).one()
 
         publisher.name = name
         publisher.address = address
@@ -336,9 +423,12 @@ def edit_publisher(publisher_id):
 
 
 @app.route('/publishers/<int:publisher_id>/delete/', methods=['delete'])
-def delete_publisher(publisher_id):
+@token_required
+def delete_publisher(current_user, publisher_id):
     if request.method == 'DELETE':
         publisher = db.session.query(PublishHouse).filter(PublishHouse.id == publisher_id).one()
+        if publisher.creator_id is not current_user.id:
+            return {'status': 'fail', 'message': 'You can\'t delete this, because you are not a creator'}
         db.session.delete(publisher)
         db.session.commit()
         return {'status': 'success', 'message': 'Publisher deleted!'}
@@ -355,7 +445,8 @@ def show_genres():
 
 
 @app.route('/genres/add/', methods=['post'])
-def add_genre():
+@token_required
+def add_genre(current_user):
     if request.method == 'POST':
         data = request.get_json()
         genre_data = data.get('genre')
@@ -363,6 +454,7 @@ def add_genre():
         genre = Genre()
 
         genre.genre = genre_data
+        genre.creator = current_user
 
         db.session.add(genre)
         db.session.commit()
@@ -371,9 +463,12 @@ def add_genre():
 
 
 @app.route('/genres/<int:genre_id>/delete/', methods=['delete'])
-def delete_genre(genre_id):
+@token_required
+def delete_genre(current_user, genre_id):
     if request.method == 'DELETE':
         genre = db.session.query(Genre).filter(Genre.id == genre_id).one()
+        if genre.creator_id is not current_user.id:
+            return {'status': 'fail', 'message': 'You can\'t delete this, because you are not a creator'}
         db.session.delete(genre)
         db.session.commit()
         return {'status': 'success', 'message': 'Genre deleted!'}

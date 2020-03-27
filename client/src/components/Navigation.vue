@@ -16,8 +16,50 @@
         </li>
       </ul>
       <form class="form-inline mt-2 mt-md-0">
-        <router-link class="btn btn-outline-primary my-2 my-sm-0" to="/login">Sign in</router-link>
+        <b-button-group v-if="!isLoggedIn">
+          <router-link class="btn btn-outline-primary my-2 my-sm-0" to="/login">
+            Sign in
+          </router-link>
+          <router-link class="btn btn-outline-primary my-2 my-sm-0" to="/register">
+            Sign up
+          </router-link>
+        </b-button-group>
+        <b-button-group v-if="isLoggedIn">
+          <label class="d-inline p-2 bg-secondary text-white radius">Current user:
+            {{ currentUser }}</label>
+          <button type="button" class="btn btn-danger my-2 my-sm-0" @click="logout">
+            Sign out
+          </button>
+        </b-button-group>
       </form>
     </div>
   </nav>
 </template>
+
+<script>
+  export default {
+    computed: {
+      isLoggedIn: function () {
+        return this.$store.getters.isLoggedIn
+      },
+      currentUser: function () {
+        return this.$store.getters.userName
+      },
+    },
+    methods: {
+      logout: function () {
+        this.$store.dispatch('logout')
+          .then(() => {
+            this.$router.push('/login')
+          })
+      }
+    },
+  }
+</script>
+
+<style scoped>
+  .radius {
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+  }
+</style>

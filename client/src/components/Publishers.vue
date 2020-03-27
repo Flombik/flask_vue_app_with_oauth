@@ -1,12 +1,11 @@
 <template>
   <b-container>
-    <navigation/>
     <div class="comp-style">
       <div class="table-width">
         <h1>Publishers</h1>
         <br><br>
         <alert :message=message v-if="showMessage"></alert>
-        <button class="btn btn-success" type="button" v-b-modal.publisher-modal>
+        <button class="btn btn-success" type="button" v-if="isLoggedIn" v-b-modal.publisher-modal>
           Add Publisher
         </button>
         <br><br>
@@ -17,7 +16,7 @@
             <th scope="col">Address</th>
             <th scope="col">Phone number</th>
             <th scope="col">Website</th>
-            <th></th>
+            <th v-if="isLoggedIn"/>
           </tr>
           </thead>
           <tbody :key="index" v-for="(publisher, index) in publishers">
@@ -26,7 +25,7 @@
             <td>{{ publisher.address }}</td>
             <td>{{ publisher.phone_num }}</td>
             <td>{{ publisher.website }}</td>
-            <td class="btn-gr-ud">
+            <td class="btn-gr-ud" v-if="isLoggedIn">
               <div class="btn-group" role="group">
                 <button
                   @click="editPublisher(publisher)"
@@ -156,7 +155,6 @@
 <script>
 import axios from 'axios';
 import Alert from './Alert.vue';
-import Navigation from './Navigation.vue';
 
 export default {
   data() {
@@ -181,8 +179,12 @@ export default {
   },
   components: {
     alert: Alert,
-    navigation: Navigation,
   },
+  computed: {
+      isLoggedIn: function () {
+        return this.$store.getters.isLoggedIn
+      }
+    },
   methods: {
     getPublishers() {
       const path = 'http://localhost:5000/publishers/';

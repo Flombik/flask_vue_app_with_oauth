@@ -1,10 +1,8 @@
 from server.app import app, db
-from flask_cors import CORS
 from flask_migrate import MigrateCommand
 from flask_script import Manager, Shell
 
 manager = Manager(app)
-CORS(app, resources={r'/*': {'origins': '*'}})
 
 
 def make_shell_context():

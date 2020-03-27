@@ -1,12 +1,11 @@
 <template>
   <b-container>
-    <navigation/>
     <div class="comp-style">
       <div class="table-width">
         <h1>Authors</h1>
         <br><br>
         <alert :dismiss=dismiss :message=message v-if="showMessage"></alert>
-        <button type="button" class="btn btn-success" v-b-modal.author-modal>
+        <button type="button" class="btn btn-success" v-if="isLoggedIn" v-b-modal.author-modal>
           Add Author
         </button>
         <br><br>
@@ -16,7 +15,7 @@
             <th scope="col">Name</th>
             <th scope="col">Direction</th>
             <th scope="col">Date of Birth</th>
-            <th></th>
+            <th v-if="isLoggedIn"/>
           </tr>
           </thead>
           <tbody v-for="(author, index) in authors" :key="index">
@@ -24,7 +23,7 @@
             <td>{{ author.name }}</td>
             <td>{{ author.direction }}</td>
             <td>{{ author.date_of_birth }}</td>
-            <td class="btn-gr-ud">
+            <td class="btn-gr-ud" v-if="isLoggedIn">
               <div class="btn-group" role="group">
                 <button
                   type="button"
@@ -134,7 +133,6 @@
 <script>
 import axios from 'axios';
 import Alert from './Alert.vue';
-import Navigation from './Navigation.vue';
 
 export default {
   data() {
@@ -158,8 +156,12 @@ export default {
   },
   components: {
     alert: Alert,
-    navigation: Navigation,
   },
+  computed: {
+      isLoggedIn: function () {
+        return this.$store.getters.isLoggedIn
+      }
+    },
   methods: {
     getAuthors() {
       const path = 'http://localhost:5000/authors/';

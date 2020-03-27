@@ -5,6 +5,7 @@ import Authors from '../components/Authors.vue';
 import Publishers from '../components/Publishers.vue';
 import Genres from '../components/Genres.vue';
 import Login from '../components/Login.vue';
+import Register from "../components/Register.vue";
 
 Vue.use(VueRouter);
 
@@ -38,6 +39,11 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: Login,
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: Register,
   },
 ];
 

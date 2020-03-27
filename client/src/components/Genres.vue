@@ -1,12 +1,11 @@
 <template>
   <b-container>
-    <navigation/>
     <div class="comp-style">
       <div class="table-width">
         <h1>Genres</h1>
         <br><br>
         <alert :message=message v-if="showMessage"></alert>
-        <button type="button" class="btn btn-success" v-b-modal.genre-modal>
+        <button type="button" class="btn btn-success" v-if="isLoggedIn" v-b-modal.genre-modal>
           Add Genre
         </button>
         <br><br>
@@ -14,13 +13,13 @@
           <thead class="thead-light">
           <tr>
             <th scope="col">Genre</th>
-            <th></th>
+            <th v-if="isLoggedIn"/>
           </tr>
           </thead>
           <tbody v-for="(genre, index) in genres" :key="index">
           <tr>
             <td>{{ genre.genre }}</td>
-            <td class="btn-gr-ud">
+            <td class="btn-gr-ud" v-if="isLoggedIn">
               <button
                 type="button"
                 class="btn btn-danger btn-sm"
@@ -60,7 +59,6 @@
 <script>
 import axios from 'axios';
 import Alert from './Alert.vue';
-import Navigation from './Navigation.vue';
 
 export default {
   data() {
@@ -75,8 +73,12 @@ export default {
   },
   components: {
     alert: Alert,
-    navigation: Navigation,
   },
+  computed: {
+      isLoggedIn: function () {
+        return this.$store.getters.isLoggedIn
+      }
+    },
   methods: {
     getGenres() {
       const path = 'http://localhost:5000/genres/';

@@ -1,12 +1,13 @@
 <template>
   <b-container>
-    <navigation/>
     <div class="comp-style">
       <div class="table-width">
         <h1>Books</h1>
         <br><br>
         <alert :message=message v-if="showMessage"></alert>
-        <button type="button" class="btn btn-success" v-b-modal.book-modal>Add Book</button>
+        <button v-if="isLoggedIn" type="button" class="btn btn-success" v-b-modal.book-modal>Add
+          Book
+        </button>
         <br><br>
         <table class="table table-hover">
           <thead class="thead-light">
@@ -17,7 +18,7 @@
             <th scope="col">Year of writing</th>
             <th scope="col">Pages</th>
             <th scope="col">Publish house</th>
-            <th/>
+            <th v-if="isLoggedIn"/>
           </tr>
           </thead>
           <tbody v-for="(book, index) in books" :key="index">
@@ -28,7 +29,7 @@
             <td>{{ book.year }}</td>
             <td>{{ book.pages }}</td>
             <td>{{ book.publisher }}</td>
-            <td class="btn-gr-ud">
+            <td class="btn-gr-ud" v-if="isLoggedIn">
               <div class="btn-group" role="group">
                 <button
                   type="button"
@@ -76,7 +77,7 @@
           </b-form-input>
         </b-form-group>
         <b-form-group id="form-genre-group"
-                      label="genre:"
+                      label="Genre:"
                       label-for="form-genre-input">
           <b-form-input id="form-genre-input"
                         type="text"
@@ -196,156 +197,159 @@
 </template>
 
 <script>
-import axios from 'axios';
-import Alert from './Alert.vue';
-import Navigation from './Navigation.vue';
+  import axios from 'axios';
+  import Alert from './Alert.vue';
 
-export default {
-  data() {
-    return {
-      books: [],
-      addBookForm: {
-        title: '',
-        author: '',
-        genre: '',
-        year: '',
-        pages: '',
-        publisher: '',
-      },
-      editBookForm: {
-        id: '',
-        title: '',
-        author: '',
-        genre: '',
-        year: '',
-        pages: '',
-        publisher: '',
-      },
-      message: '',
-      showMessage: false,
-    };
-  },
-  components: {
-    alert: Alert,
-    navigation: Navigation,
-  },
-  methods: {
-    getBooks() {
-      const path = 'http://localhost:5000/books/';
-      axios.get(path)
-        .then((res) => {
-          this.books = res.data.books;
-        })
-        .catch((error) => {
-          // eslint-отключение следующей строки
-          console.error(error);
-        });
-    },
-    addBook(payload) {
-      const path = 'http://localhost:5000/books/add/';
-      axios.post(path, payload)
-        .then((res) => {
-          this.getBooks();
-          this.message = res.data.message;
-          this.showMessage = true;
-        })
-        .catch((error) => {
-          // eslint-отключение следующей строки
-          console.log(error);
-          this.getBooks();
-        });
-    },
-    initForm() {
-      this.addBookForm.title = '';
-      this.addBookForm.author = '';
-      this.addBookForm.genre = '';
-      this.addBookForm.year = '';
-      this.addBookForm.pages = '';
-      this.addBookForm.publisher = '';
-      this.editBookForm.title = '';
-      this.editBookForm.author = '';
-      this.editBookForm.genre = '';
-      this.editBookForm.year = '';
-      this.editBookForm.pages = '';
-      this.editBookForm.publisher = '';
-    },
-    onSubmit(evt) {
-      evt.preventDefault();
-      this.$refs.addBookModal.hide();
-      const payload = {
-        title: this.addBookForm.title,
-        author: this.addBookForm.author,
-        genre: this.addBookForm.genre,
-        year: this.addBookForm.year,
-        pages: this.addBookForm.pages,
-        publisher: this.addBookForm.publisher,
+  export default {
+    data() {
+      return {
+        books: [],
+        addBookForm: {
+          title: '',
+          author: '',
+          genre: '',
+          year: '',
+          pages: '',
+          publisher: '',
+        },
+        editBookForm: {
+          id: '',
+          title: '',
+          author: '',
+          genre: '',
+          year: '',
+          pages: '',
+          publisher: '',
+        },
+        message: '',
+        showMessage: false,
       };
-      this.addBook(payload);
-      this.initForm();
     },
-    onReset(evt) {
-      evt.preventDefault();
-      this.$refs.addBookModal.hide();
-      this.initForm();
+    components: {
+      alert: Alert,
     },
-    editBook(book) {
-      this.editBookForm = book;
+    computed: {
+      isLoggedIn: function () {
+        return this.$store.getters.isLoggedIn
+      }
     },
-    updateBook(payload, bookID) {
-      const path = `http://localhost:5000/books/${bookID}/edit/`;
-      axios.put(path, payload)
-        .then((res) => {
-          this.getBooks();
-          this.message = res.data.message;
-          this.showMessage = true;
-        })
-        .catch((error) => {
-          // eslint-disable-next-line
-          console.error(error);
-          this.getBooks();
-        });
+    methods: {
+      getBooks() {
+        const path = 'http://localhost:5000/books/';
+        axios.get(path)
+          .then((res) => {
+            this.books = res.data.books;
+          })
+          .catch((error) => {
+            // eslint-отключение следующей строки
+            console.error(error);
+          });
+      },
+      addBook(payload) {
+        const path = 'http://localhost:5000/books/add/';
+        axios.post(path, payload)
+          .then((res) => {
+            this.getBooks();
+            this.message = res.data.message;
+            this.showMessage = true;
+          })
+          .catch((error) => {
+            // eslint-отключение следующей строки
+            console.log(error);
+            this.getBooks();
+          });
+      },
+      initForm() {
+        this.addBookForm.title = '';
+        this.addBookForm.author = '';
+        this.addBookForm.genre = '';
+        this.addBookForm.year = '';
+        this.addBookForm.pages = '';
+        this.addBookForm.publisher = '';
+        this.editBookForm.title = '';
+        this.editBookForm.author = '';
+        this.editBookForm.genre = '';
+        this.editBookForm.year = '';
+        this.editBookForm.pages = '';
+        this.editBookForm.publisher = '';
+      },
+      onSubmit(evt) {
+        evt.preventDefault();
+        this.$refs.addBookModal.hide();
+        const payload = {
+          title: this.addBookForm.title,
+          author: this.addBookForm.author,
+          genre: this.addBookForm.genre,
+          year: this.addBookForm.year,
+          pages: this.addBookForm.pages,
+          publisher: this.addBookForm.publisher,
+        };
+        this.addBook(payload);
+        this.initForm();
+      },
+      onReset(evt) {
+        evt.preventDefault();
+        this.$refs.addBookModal.hide();
+        this.initForm();
+      },
+      editBook(book) {
+        this.editBookForm = book;
+      },
+      updateBook(payload, bookID) {
+        const path = `http://localhost:5000/books/${bookID}/edit/`;
+        axios.put(path, payload)
+          .then((res) => {
+            this.getBooks();
+            this.message = res.data.message;
+            this.showMessage = true;
+          })
+          .catch((error) => {
+            // eslint-disable-next-line
+            console.error(error);
+            this.getBooks();
+          });
+      },
+      onSubmitUpdate(evt) {
+        evt.preventDefault();
+        this.$refs.editBookModal.hide();
+        const payload = {
+          title: this.editBookForm.title,
+          author: this.editBookForm.author,
+          genre: this.editBookForm.genre,
+          year: this.editBookForm.year,
+          pages: this.editBookForm.pages,
+          publisher: this.editBookForm.publisher,
+        };
+        this.updateBook(payload, this.editBookForm.id);
+      },
+      onResetUpdate(evt) {
+        evt.preventDefault();
+        this.$refs.editBookModal.hide();
+        this.initForm();
+        this.getBooks(); // why?
+      },
+      removeBook(bookID) {
+        const path = `http://localhost:5000/books/${bookID}/delete/`;
+        axios.delete(path)
+          .then((res) => {
+            this.getBooks();
+            this.message = res.data.message;
+            this.showMessage = true;
+          })
+          .catch((error) => {
+            // eslint-disable-next-line
+            console.error(error);
+            this.getBooks();
+          });
+      },
+      onDeleteBook(book) {
+        this.removeBook(book.id);
+      },
     },
-    onSubmitUpdate(evt) {
-      evt.preventDefault();
-      this.$refs.editBookModal.hide();
-      const payload = {
-        title: this.editBookForm.title,
-        author: this.editBookForm.author,
-        genre: this.editBookForm.genre,
-        year: this.editBookForm.year,
-        pages: this.editBookForm.pages,
-        publisher: this.editBookForm.publisher,
-      };
-      this.updateBook(payload, this.editBookForm.id);
+    created() {
+      this.getBooks();
     },
-    onResetUpdate(evt) {
-      evt.preventDefault();
-      this.$refs.editBookModal.hide();
-      this.initForm();
-      this.getBooks(); // why?
-    },
-    removeBook(bookID) {
-      const path = `http://localhost:5000/books/${bookID}/delete/`;
-      axios.delete(path)
-        .then((res) => {
-          this.getBooks();
-          this.message = res.data.message;
-          this.showMessage = true;
-        })
-        .catch((error) => {
-          // eslint-disable-next-line
-          console.error(error);
-          this.getBooks();
-        });
-    },
-    onDeleteBook(book) {
-      this.removeBook(book.id);
-    },
-  },
-  created() {
-    this.getBooks();
-  },
-};
+  };
 </script>
 
 <style scoped>
