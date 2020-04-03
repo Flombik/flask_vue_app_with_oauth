@@ -3,81 +3,80 @@
     <div class="comp-style">
       <div class="table-width">
         <h1>Authors</h1>
-        <br><br>
-        <alert :dismiss=dismiss :message=message v-if="showMessage"></alert>
+        <br /><br />
+        <alert :dismiss="dismiss" :message="message" v-if="showMessage"></alert>
         <button type="button" class="btn btn-success" v-if="isLoggedIn" v-b-modal.author-modal>
           Add Author
         </button>
-        <br><br>
+        <br /><br />
         <table class="table table-hover">
           <thead class="thead-light">
-          <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Direction</th>
-            <th scope="col">Date of Birth</th>
-            <th v-if="isLoggedIn"/>
-          </tr>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Direction</th>
+              <th scope="col">Date of Birth</th>
+              <th v-if="isLoggedIn" />
+            </tr>
           </thead>
           <tbody v-for="(author, index) in authors" :key="index">
-          <tr>
-            <td>{{ author.name }}</td>
-            <td>{{ author.direction }}</td>
-            <td>{{ author.date_of_birth }}</td>
-            <td class="btn-gr-ud" v-if="isLoggedIn">
-              <div class="btn-group" role="group">
-                <button
-                  type="button"
-                  class="btn btn-warning btn-sm"
-                  v-b-modal.author-update-modal
-                  @click="editAuthor(author)">
-                  Update
-                </button>
-                <button
-                  type="button"
-                  class="btn btn-danger btn-sm"
-                  @click="onDeleteAuthor(author)">
-                  Delete
-                </button>
-              </div>
-            </td>
-          </tr>
+            <tr>
+              <td>{{ author.name }}</td>
+              <td>{{ author.direction }}</td>
+              <td>{{ author.date_of_birth }}</td>
+              <td class="btn-gr-ud" v-if="isLoggedIn">
+                <div class="btn-group" role="group">
+                  <button
+                    type="button"
+                    class="btn btn-warning btn-sm"
+                    v-b-modal.author-update-modal
+                    @click="editAuthor(author)"
+                  >
+                    Update
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-danger btn-sm"
+                    @click="onDeleteAuthor(author)"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
     </div>
-    <b-modal ref="addAuthorModal"
-             id="author-modal"
-             title="Add a new author"
-             hide-footer>
+    <b-modal ref="addAuthorModal" id="author-modal" title="Add a new author" hide-footer>
       <b-form @submit="onSubmit" @reset="onReset" class="w-100">
-        <b-form-group id="form-name-group"
-                      label="Name:"
-                      label-for="form-name-input">
-          <b-form-input id="form-name-input"
-                        type="text"
-                        v-model="addAuthorForm.name"
-                        required
-                        placeholder="Enter name">
+        <b-form-group id="form-name-group" label="Name:" label-for="form-name-input">
+          <b-form-input
+            id="form-name-input"
+            type="text"
+            v-model="addAuthorForm.name"
+            required
+            placeholder="Enter name"
+          >
           </b-form-input>
         </b-form-group>
-        <b-form-group id="form-direction-group"
-                      label="Direction:"
-                      label-for="form-direction-input">
-          <b-form-input id="form-direction-input"
-                        type="text"
-                        v-model="addAuthorForm.direction"
-                        required
-                        placeholder="Enter direction">
+        <b-form-group id="form-direction-group" label="Direction:" label-for="form-direction-input">
+          <b-form-input
+            id="form-direction-input"
+            type="text"
+            v-model="addAuthorForm.direction"
+            required
+            placeholder="Enter direction"
+          >
           </b-form-input>
         </b-form-group>
-        <b-form-group id="form-dob-group"
-                      label="Date of birth:"
-                      label-for="form-dob-input">
-          <b-form-input id="form-dob-input"
-                        type="text"
-                        v-model="addAuthorForm.date_of_birth"
-                        required
-                        placeholder="Enter date of birth">
+        <b-form-group id="form-dob-group" label="Date of birth:" label-for="form-dob-input">
+          <b-form-input
+            id="form-dob-input"
+            type="text"
+            v-model="addAuthorForm.date_of_birth"
+            required
+            placeholder="Enter date of birth"
+          >
           </b-form-input>
         </b-form-group>
         <b-button-group>
@@ -86,39 +85,44 @@
         </b-button-group>
       </b-form>
     </b-modal>
-    <b-modal ref="editAuthorModal"
-             id="author-update-modal"
-             title="Update"
-             hide-footer>
+    <b-modal ref="editAuthorModal" id="author-update-modal" title="Update" hide-footer>
       <b-form @submit="onSubmitUpdate" @reset="onResetUpdate" class="w-100">
-        <b-form-group id="form-name-edit-group"
-                      label="Name:"
-                      label-for="form-name-edit-input">
-          <b-form-input id="form-name-edit-input"
-                        type="text"
-                        v-model="editAuthorForm.name"
-                        required
-                        placeholder="Enter name">
+        <b-form-group id="form-name-edit-group" label="Name:" label-for="form-name-edit-input">
+          <b-form-input
+            id="form-name-edit-input"
+            type="text"
+            v-model="editAuthorForm.name"
+            required
+            placeholder="Enter name"
+          >
           </b-form-input>
         </b-form-group>
-        <b-form-group id="form-direction-edit-group"
-                      label="Direction:"
-                      label-for="form-direction-edit-input">
-          <b-form-input id="form-direction-edit-input"
-                        type="text"
-                        v-model="editAuthorForm.direction"
-                        required
-                        placeholder="Enter direction">
+        <b-form-group
+          id="form-direction-edit-group"
+          label="Direction:"
+          label-for="form-direction-edit-input"
+        >
+          <b-form-input
+            id="form-direction-edit-input"
+            type="text"
+            v-model="editAuthorForm.direction"
+            required
+            placeholder="Enter direction"
+          >
           </b-form-input>
         </b-form-group>
-        <b-form-group id="form-dob-edit-group"
-                      label="Date of birth:"
-                      label-for="form-dob-edit-input">
-          <b-form-input id="form-dob-edit-input"
-                        type="text"
-                        v-model="editAuthorForm.date_of_birth"
-                        required
-                        placeholder="Enter date of birth">
+        <b-form-group
+          id="form-dob-edit-group"
+          label="Date of birth:"
+          label-for="form-dob-edit-input"
+        >
+          <b-form-input
+            id="form-dob-edit-input"
+            type="text"
+            v-model="editAuthorForm.date_of_birth"
+            required
+            placeholder="Enter date of birth"
+          >
           </b-form-input>
         </b-form-group>
         <b-button-group>
@@ -131,70 +135,72 @@
 </template>
 
 <script>
-import axios from 'axios';
-import Alert from './Alert.vue';
+import axios from "axios";
+import Alert from "./Alert.vue";
 
 export default {
   data() {
     return {
       authors: [],
       addAuthorForm: {
-        name: '',
-        direction: '',
-        date_of_birth: '',
+        name: "",
+        direction: "",
+        date_of_birth: ""
       },
       editAuthorForm: {
-        id: '',
-        name: '',
-        direction: '',
-        date_of_birth: '',
+        id: "",
+        name: "",
+        direction: "",
+        date_of_birth: ""
       },
-      message: '',
+      message: "",
       dismiss: 0,
-      showMessage: false,
+      showMessage: false
     };
   },
   components: {
-    alert: Alert,
+    alert: Alert
   },
   computed: {
-      isLoggedIn: function () {
-        return this.$store.getters.isLoggedIn
-      }
-    },
+    isLoggedIn() {
+      return this.$store.getters.isLoggedIn;
+    }
+  },
   methods: {
     getAuthors() {
-      const path = 'http://localhost:5000/authors/';
-      axios.get(path)
-        .then((res) => {
+      const path = "http://localhost:5000/authors/";
+      axios
+        .get(path)
+        .then(res => {
           this.authors = res.data.authors;
         })
-        .catch((error) => {
+        .catch(error => {
           // eslint-отключение следующей строки
           console.error(error);
         });
     },
     addAuthor(payload) {
-      const path = 'http://localhost:5000/authors/add/';
-      axios.post(path, payload)
-        .then((res) => {
+      const path = "http://localhost:5000/authors/add/";
+      axios
+        .post(path, payload)
+        .then(res => {
           this.getAuthors();
           this.message = res.data.message;
           this.showMessage = true;
         })
-        .catch((error) => {
+        .catch(error => {
           // eslint-отключение следующей строки
           console.log(error);
           this.getAuthors();
         });
     },
     initForm() {
-      this.addAuthorForm.name = '';
-      this.addAuthorForm.direction = '';
-      this.addAuthorForm.date_of_birth = '';
-      this.editAuthorForm.name = '';
-      this.editAuthorForm.direction = '';
-      this.editAuthorForm.date_of_birth = '';
+      this.addAuthorForm.name = "";
+      this.addAuthorForm.direction = "";
+      this.addAuthorForm.date_of_birth = "";
+      this.editAuthorForm.name = "";
+      this.editAuthorForm.direction = "";
+      this.editAuthorForm.date_of_birth = "";
     },
     onSubmit(evt) {
       evt.preventDefault();
@@ -202,7 +208,7 @@ export default {
       const payload = {
         name: this.addAuthorForm.name,
         direction: this.addAuthorForm.direction,
-        date_of_birth: this.addAuthorForm.date_of_birth,
+        date_of_birth: this.addAuthorForm.date_of_birth
       };
       this.addAuthor(payload);
       this.initForm();
@@ -213,17 +219,21 @@ export default {
       this.initForm();
     },
     editAuthor(author) {
-      this.editAuthorForm = author;
+      this.editAuthorForm.id = author.id;
+      this.editAuthorForm.name = author.name;
+      this.editAuthorForm.direction = author.direction;
+      this.editAuthorForm.date_of_birth = author.date_of_birth;
     },
     updateAuthor(payload, authorID) {
       const path = `http://localhost:5000/authors/${authorID}/edit/`;
-      axios.put(path, payload)
-        .then((res) => {
+      axios
+        .put(path, payload)
+        .then(res => {
           this.getAuthors();
           this.message = res.data.message;
           this.showMessage = true;
         })
-        .catch((error) => {
+        .catch(error => {
           // eslint-disable-next-line
           console.error(error);
           this.getAuthors();
@@ -235,7 +245,7 @@ export default {
       const payload = {
         name: this.editAuthorForm.name,
         direction: this.editAuthorForm.direction,
-        date_of_birth: this.editAuthorForm.date_of_birth,
+        date_of_birth: this.editAuthorForm.date_of_birth
       };
       this.updateAuthor(payload, this.editAuthorForm.id);
     },
@@ -247,14 +257,15 @@ export default {
     },
     removeAuthor(authorID) {
       const path = `http://localhost:5000/authors/${authorID}/delete/`;
-      axios.delete(path)
-        .then((res) => {
+      axios
+        .delete(path)
+        .then(res => {
           this.getAuthors();
           this.message = res.data.message;
           this.showMessage = true;
           alert.showAlert();
         })
-        .catch((error) => {
+        .catch(error => {
           // eslint-disable-next-line
           console.error(error);
           this.getAuthors();
@@ -262,27 +273,27 @@ export default {
     },
     onDeleteAuthor(author) {
       this.removeAuthor(author.id);
-    },
+    }
   },
   created() {
     this.getAuthors();
-  },
+  }
 };
 </script>
 
 <style scoped>
-  .comp-style {
-    padding: 15px;
-    margin: 0 auto;
-  }
+.comp-style {
+  padding: 15px;
+  margin: 0 auto;
+}
 
-  .table-width {
-    max-width: 25cm;
-    margin: 0 auto;
-  }
+.table-width {
+  max-width: 25cm;
+  margin: 0 auto;
+}
 
-  .btn-gr-ud {
-    text-align: right;
-    width: 105px;
-  }
+.btn-gr-ud {
+  text-align: right;
+  width: 105px;
+}
 </style>

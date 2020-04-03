@@ -1,56 +1,56 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router';
-import Books from '../components/Books.vue';
-import Authors from '../components/Authors.vue';
-import Publishers from '../components/Publishers.vue';
-import Genres from '../components/Genres.vue';
-import Login from '../components/Login.vue';
+import Vue from "vue";
+import VueRouter from "vue-router";
+import Books from "../components/Books.vue";
+import Authors from "../components/Authors.vue";
+import Publishers from "../components/Publishers.vue";
+import Genres from "../components/Genres.vue";
+import Login from "../components/Login.vue";
 import Register from "../components/Register.vue";
 
 Vue.use(VueRouter);
 
 const routes = [
   {
-    path: '/',
-    name: 'First',
-    component: Books,
+    path: "/",
+    name: "First",
+    component: Books
   },
   {
-    path: '/books',
-    name: 'Books',
-    component: Books,
+    path: "/books",
+    name: "Books",
+    component: Books
   },
   {
-    path: '/authors',
-    name: 'Authors',
-    component: Authors,
+    path: "/authors",
+    name: "Authors",
+    component: Authors
   },
   {
-    path: '/publishers',
-    name: 'Publishers',
-    component: Publishers,
+    path: "/publishers",
+    name: "Publishers",
+    component: Publishers
   },
   {
-    path: '/genres',
-    name: 'Genres',
-    component: Genres,
+    path: "/genres",
+    name: "Genres",
+    component: Genres
   },
   {
-    path: '/login',
-    name: 'Login',
-    component: Login,
+    path: "/login",
+    name: "Login",
+    component: Login
   },
   {
-    path: '/register',
-    name: 'Register',
-    component: Register,
-  },
+    path: "/register",
+    name: "Register",
+    component: Register
+  }
 ];
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: "history",
   base: process.env.BASE_URL,
-  routes,
+  routes
 });
 
 export default router;

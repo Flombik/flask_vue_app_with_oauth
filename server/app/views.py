@@ -4,6 +4,8 @@ import requests
 import jwt
 from functools import wraps
 from datetime import datetime, timedelta
+import webbrowser
+import asyncio
 
 from server.app import app
 from .models import Book, Author, Genre, PublishHouse, User, db
@@ -69,10 +71,29 @@ def register():
     return {'status': 'success', 'message': 'Registered successfully!'}
 
 
+def oauth_login(email):
+    query_res = db.session.query(User).filter(User.email == email).first()
+    if query_res is None:
+        user = User(email)
+        db.session.add(user)
+        db.session.commit()
+    else:
+        user = query_res
+
+    username = user.email.split('@')[0]
+    token = jwt.encode({
+        'sub': user.email,
+        'iat': datetime.utcnow(),
+        'exp': datetime.utcnow() + timedelta(minutes=30)},
+        app.config['SECRET_KEY'])
+    return {'token': token.decode('UTF-8'), 'username': username}
+
+
 @app.route('/login/github/')
 def login_via_github():
     authorization_code_req = {'client_id': '4e0a85b77b11c9e13162'}
-    return redirect('https://github.com/login/oauth/authorize?{}'.format(parser.urlencode(authorization_code_req)))
+    authorization_link = 'https://github.com/login/oauth/authorize?{}'.format(parser.urlencode(authorization_code_req))
+    return {'status': 'success', 'link': authorization_link}
 
 
 @app.route('/login/github/callback/')
@@ -92,8 +113,9 @@ def github_callback():
 
         user_info_resp = requests.get('https://api.github.com/user',
                                       headers={'Authorization': 'token {}'.format(token)})
-        user_info_resp.json().get('email')
-        return redirect(url_for('books'))
+        email = user_info_resp.json().get('email')
+        token = oauth_login(email)
+        return redirect('http://localhost:8080/login?{}'.format(parser.urlencode(token)))
 
 
 @app.route('/login/vk/')
@@ -102,13 +124,13 @@ def login_via_vk():
                               'redirect_uri': 'http://localhost:5000/login/vk/callback',
                               'response_type': 'code',
                               'scope': 'email'}
-    return redirect('https://oauth.vk.com/authorize?{}'.format(parser.urlencode(authorization_code_req)))
+    authorization_link = 'https://oauth.vk.com/authorize?{}'.format(parser.urlencode(authorization_code_req))
+    return {'link': authorization_link}
 
 
 @app.route('/login/vk/callback/')
 def vk_callback():
     query = request.query_string
-    print(query)
     if query != b'':
         query_data = parser.parse_qs(query)
         code = query_data[b'code'][0].decode('utf-8')
@@ -118,29 +140,24 @@ def vk_callback():
             'redirect_uri': 'http://localhost:5000/login/vk/callback',
             'code': code
         }
-        print(code)
         response = requests.post('https://oauth.vk.com/access_token?%s' % parser.urlencode(token_req),
                                  headers={'Accept': 'application/json'})
-        token = response.json().get('access_token')
         email = response.json().get('email')
-
-        # user_info_resp = requests.get('https://api.github.com/user',
-        #                               headers={'Authorization': 'token {}'.format(token)})
-        # user_info_resp.json().get('email')
-        return redirect(url_for('books'))
+        token = oauth_login(email)
+        return redirect('http://localhost:8080/login?{}'.format(parser.urlencode(token)))
 
 
 @app.route('/login/yandex/')
 def login_via_yandex():
     authorization_code_req = {'response_type': 'code', 'client_id': '2786de9efc2c4f819c464b3056b946d5',
                               'force_confirm': 'true'}
-    return redirect('https://oauth.yandex.ru/authorize?{}'.format(parser.urlencode(authorization_code_req)))
+    authorization_link = 'https://oauth.yandex.ru/authorize?{}'.format(parser.urlencode(authorization_code_req))
+    return {'link': authorization_link}
 
 
 @app.route('/login/yandex/callback/')
 def yandex_callback():
     query = request.query_string
-    print(query)
     if query != b'':
         query_data = parser.parse_qs(query)
         code = query_data[b'code'][0].decode('utf-8')
@@ -158,7 +175,8 @@ def yandex_callback():
                                       headers={'Authorization': 'OAuth {}'.format(token)})
 
         email = user_info_resp.json().get('default_email')
-        return email
+        token = oauth_login(email)
+        return redirect('http://localhost:8080/login?{}'.format(parser.urlencode(token)))
 
 
 @app.route('/books/')

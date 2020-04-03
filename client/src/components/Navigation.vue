@@ -25,8 +25,9 @@
           </router-link>
         </b-button-group>
         <b-button-group v-if="isLoggedIn">
-          <label class="d-inline p-2 bg-secondary text-white radius">Current user:
-            {{ currentUser }}</label>
+          <label class="d-inline p-2 bg-secondary text-white radius"
+            >Current user: {{ currentUser }}</label
+          >
           <button type="button" class="btn btn-danger my-2 my-sm-0" @click="logout">
             Sign out
           </button>
@@ -37,29 +38,28 @@
 </template>
 
 <script>
-  export default {
-    computed: {
-      isLoggedIn: function () {
-        return this.$store.getters.isLoggedIn
-      },
-      currentUser: function () {
-        return this.$store.getters.userName
-      },
+export default {
+  computed: {
+    isLoggedIn() {
+      return this.$store.getters.isLoggedIn;
     },
-    methods: {
-      logout: function () {
-        this.$store.dispatch('logout')
-          .then(() => {
-            this.$router.push('/login')
-          })
-      }
-    },
+    currentUser() {
+      return this.$store.getters.userName;
+    }
+  },
+  methods: {
+    logout() {
+      this.$store.dispatch("logout").then(() => {
+        this.$router.push("/login");
+      });
+    }
   }
+};
 </script>
 
 <style scoped>
-  .radius {
-    border-top-left-radius: 5px;
-    border-bottom-left-radius: 5px;
-  }
+.radius {
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
 </style>
