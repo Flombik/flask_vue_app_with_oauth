@@ -1,0 +1,28 @@
+version: '3.7'
+
+services:
+  db:
+    image: "postgres:latest"
+    restart: always
+    env_file:
+      - database.env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - 5432:5432
+  server:
+    build: ./server
+    ports:
+      - 5000:5000
+    depends_on:
+      - db
+  client:
+    build: ./client
+    ports: 
+      - 8080:80
+    depends_on: 
+      - server
+
+      
+volumes:
+  postgres_data:
